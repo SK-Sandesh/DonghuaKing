@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Daily Donghua Updates</title>
+  <style>
+    :root {
+      --bg: #2f2f2f;
+      --panel: #3b3b3b;
+      --item: #6b6b6b;
+      --accent: #0e78b8;
+      --accent-dark: #0a4f6b;
+      --black-pill: #070707;
+      --glass-shadow: 0 4px 8px rgba(0, 0, 0, 0.6), inset 0 -4px 6px rgba(0, 0, 0, 0.45);
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: white;
+      -webkit-font-smoothing: antialiased;
+      padding: 22px;
+      display: flex;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    /* Hover pop + color change */
+    .copy-btn {
+      transition: all 0.18s ease-out;
+    }
+
+    .copy-btn:hover {
+      background: linear-gradient(#1290d6, #0c5b7a);
+      /* brighter blue */
+      transform: scale(1.05);
+      /* slight pop */
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 980px
+    }
+
+    /* header ribbon */
+    .header-ribbon {
+      width: 100%;
+      height: 72px;
+      background: linear-gradient(#0ea4e6, var(--accent));
+      border-radius: 18px;
+      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.4), inset 0 -6px rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      position: relative;
+      border: 3px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .header-title {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6)
+    }
+
+    .days-row {
+      display: flex;
+      gap: 10px;
+      margin: 6px 0 18px;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch
+    }
+
+    .day-pill {
+      flex: 0 0 auto;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.9);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      border: 1px solid rgb(118 120 7);
+    }
+
+    .days-row {
+      overflow: auto;
+      scrollbar-width: none;
+      /* Firefox */
+      -ms-overflow-style: none;
+      /* IE/Edge */
+    }
+
+    .days-row::-webkit-scrollbar {
+      /* Chrome / Safari */
+      width: 0;
+      height: 0;
+    }
+
+
+
+    .day-pill.active {
+      background: var(--black-pill);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7), inset 0 -6px rgba(255, 255, 255, 0.02)
+    }
+
+    .panel {
+      background: linear-gradient(180deg, var(--panel), #2f2f2f);
+      padding: 18px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6)
+    }
+
+    .panel .panel-title {
+      margin-bottom: 25px;
+      margin-top: 15px;
+    }
+
+    .panel .panel-title .day-pill {
+      padding: 12px 20px;
+      font-size: 20px
+    }
+
+    /* list items */
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .list-item {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    /* thumbnail frame */
+    .thumb {
+      width: 72px;
+      height: 100px;
+      flex: 0 0 auto;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgb(0 0 0 / 90%);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+      background: #222;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block
+    }
+
+    .series-box {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: linear-gradient(#666, #4f4f4f);
+      box-shadow: var(--glass-shadow)
+    }
+
+    .series-info {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .series-title {
+      font-size: 20px;
+      font-weight: 600;
+      ccolor: #ffffff;
+      text-shadow: 1.5px 1.5px 0 rgb(0 0 0 / 32%);
+    }
+
+    .copy-wrap {
+      position: relative
+    }
+
+    .copy-btn {
+      min-width: 110px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(var(--accent), var(--accent-dark));
+      border: 3px solid rgba(0, 0, 0, 0.6);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 6px 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6), inset 0 -3px rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    /* dropdown with multiple links */
+    .links-dropdown {
+      position: absolute;
+      right: 0;
+      bottom: 54px;
+      width: 160px;
+      background: linear-gradient(#555, #444);
+      border-radius: 8px;
+      padding: 8px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+      border: 3px solid rgba(0, 0, 0, 0.6);
+      display: none;
+      z-index: 40
+    }
+
+    .links-dropdown.show {
+      display: block
+    }
+
+    .links-dropdown button {
+      display: block;
+      width: 100%;
+      margin: 6px 0;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: linear-gradient(#777, #666);
+      color: white;
+      border: 1px solid rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+      text-align: center
+    }
+
+    .panel-empty {
+      height: 40px
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 22px;
+      background: #111;
+      padding: 10px 14px;
+      border-radius: 8px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all .18s ease;
+      pointer-events: none;
+      color: #fff;
+      z-index: 9999
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+    /* lazy image fade-in (added - does not change layout) */
+    .lazy-img {
+      transition: opacity 260ms ease, transform 260ms ease;
+      opacity: 0.01;
+      transform: translateY(6px);
+      will-change: opacity, transform;
+    }
+
+    .lazy-img.loaded {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* mobile tweaks (iPhone 17 ~ 393px wide in portrait) */
+    @media (max-width:420px) {
+      body {
+        padding: 12px
+      }
+
+      .header-ribbon {
+        height: 66px
+      }
+
+      .header-title {
+        font-size: 22px
+      }
+
+      .thumb {
+        width: 58px;
+        height: 82px
+      }
+
+      .series-title {
+        font-size: 18px
+      }
+
+      .copy-btn {
+        min-width: 86px;
+        height: 40px;
+        font-size: 14px
+      }
+
+      .links-dropdown {
+        right: 0;
+        bottom: 50px;
+        width: 140px
+      }
+
+      .panel {
+        padding: 12px
+      }
+    }
+
+    /* small landscape / narrow screens: stack button under info */
+    @media (max-width:360px) {
+      .list-item {
+        flex-direction: column;
+        align-items: flex-start
+      }
+
+      .series-box {
+        width: 100%;
+        flex-direction: column;
+        align-items: flex-start
+      }
+
+      .copy-wrap {
+        align-self: flex-end
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="wrap">
+    <header class="header-ribbon">
+      <div class="header-title">DAILY DONGHUA UPDATES</div>
+    </header>
+
+    <nav class="days-row" role="tablist" aria-label="Days of week">
+      <button class="day-pill active" data-day="monday">MONDAY</button>
+      <button class="day-pill" data-day="tuesday">TUESDAY</button>
+      <button class="day-pill" data-day="wednesday">WEDNESDAY</button>
+      <button class="day-pill" data-day="thursday">THURSDAY</button>
+      <button class="day-pill" data-day="friday">FRIDAY</button>
+      <button class="day-pill" data-day="saturday">SATURDAY</button>
+      <button class="day-pill" data-day="sunday">SUNDAY</button>
+    </nav>
+
+    <section class="panel" id="panel">
+      <div class="panel-title"><span class="day-pill active"
+          style="background:var(--black-pill); padding:10px 16px; font-size:18px">MONDAY</span></div>
+
+      <div class="list" id="series-list"></div>
+
+      <div class="panel-empty"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast">Copied!</div>
+
+  <script>
+    // Data structure: thumbnails + title + links (array)
+    const data = {
+      monday: [
+        //  { title: 'Swallowed Star', thumb: '', links: [{ label: 'Link 1', url: '' }, { label: 'Link 2', url: '' }] },
+        { title: 'The Mighty God in the Mortal Realm', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/09/神在囧途.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/20778f3d7d25#/list/share' }] },
+        { title: 'Throne of Ten Thousand Swords', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/08/100006394.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/f124c8ff780b#/list/share' }] },
+        { title: 'The Divine Emperor of Destiny', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/09/link_015120.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/3c087fc836d3#/list/share' }] },
+        { title: 'Return of immortal Emperor', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/10/Return-of-the-Immortal-Emperor-3D.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/07c44066f49a#/list/share' }] },
+        { title: 'Lingwu Continent', thumb: 'https://donghuaworld.com/wp-content/uploads/2024/07/5d95edc29d2ad7ed71c757cc855bb446_123511.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/03aa2f777bdc#/list/share' }] },
+        { title: 'All Female Spies Are In My Sect', thumb: 'https://i0.wp.com/luciferdonghua.in/wp-content/uploads/2024/10/all-female-spies-are-in-my-sect-2024-lucifer-donghua-mister-donghua-1.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/3d587914814e#/list/share' }] },
+        { title: 'Against the sky supreme', thumb: 'https://donghuaworld.com/wp-content/uploads/2023/01/IMG_20230113_171558.png', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/e5a0847ad8b9#/list/share' }] },
+        { title: 'Supreme God Emperor', thumb: 'https://donghuaworld.com/wp-content/uploads/2023/01/Supreme-God-Emperor-1_091632.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/6d9d317d2ee6#/list/share' }] },
+        { title: 'Swallowed star ', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/03/Picsart_25-03-03_16-45-25-405.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/78cbcaead7cb#/list/share' }] },
+        //{ title: '', thumb: '', links: [{ label: 'Primary', url: '' }] },
+      ],
+      tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [
+
+        { title: 'Eclipse of illusion', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/07/22f61e479baafa19f37fadeedf0bc76b_023235-scaled.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/f2b89e0a1669#/list/share' }] },
+        { title: 'Legend Of Xianwu ', thumb: 'https://donghuaworld.com/wp-content/uploads/2023/03/Legend-of-Xianwu-Emperor.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/90bc6c7a7d44#/list/share' }] },
+        { title: 'Ascendants of the Nine Suns', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/11/1000078490.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/44bfcf3a29ea#/list/share' }] },
+        { title: 'Supreme Over the Sky', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/07/1000058661.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/f487d5a96ff8#/list/share' }] },
+        { title: 'The Sword Emperor of Eternity', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/08/1000067383.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/e9bc67ae1660#/list/share' }] },
+        { title: 'The Death Defying Divine Emperor', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/09/The-Death-Defying-Divine-Emperor.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/4463e0d61eeb#/list/share' }] },
+        { title: 'A Record Of a Mortal’s Journey To Immortality', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/01/fanren-xiu-xian-chuan-di-si-ji-1_115948.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/ceff8d5a0ffc#/list/share' }] },
+        { title: 'Battle Through the Heavens', thumb: 'https://donghuaworld.com/wp-content/uploads/2023/01/Battle-Through-the-Heavens-Season-5.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/338330f2fe96#/list/share' }] },
+
+      ], sunday: [
+        { title: 'Tales of Herding Gods', thumb: 'https://donghuaworld.com/wp-content/uploads/2024/10/tales-of-Herding-God.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/8beade49141d#/list/share/fa1997ff855f43dba3ee9803059dba9b' }] },
+        { title: 'Martial Master', thumb: 'https://donghuaworld.com/wp-content/uploads/2023/01/image_search_1712034378080_104150-01.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/89ab2dcfa120#/list/share' }] },
+        { title: 'Wuhun Continent', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/09/Wuhun-Continent.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/315d0b23531b#/list/share/5fe4b3ae1de848a58c0c91d89ff6a360' }] },
+        { title: 'Throne of Ten Thousand Swords', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/08/100006394.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/6bf0518917eb#/list/share/2b99ae8043a34f7fa97106b4bf3cbf56' }] },
+        { title: 'Shattering the Galaxy', thumb: 'https://donghuaworld.com/wp-content/uploads/2025/08/1000066395-1.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/74284c1b1627#/list/share/80f107013705419d8095511049303e83' }] },
+        { title: 'The Immortal Doctor In Modern City', thumb: 'https://donghuaworld.com/wp-content/uploads/2024/10/a8f5b8072b42cb0d94cd402287a9a824_094847-e1727843440274.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/d01c1d2b3c33#/list/share/70024082e17c41699095e31463134137' }] },
+        { title: 'Renegade Immortal', thumb: 'https://donghuaworld.com/wp-content/uploads/2023/09/1000077162.webp', links: [{ label: 'Primary', url: 'https://pan.quark.cn/s/c01c1140fc90#/list/share' }] },
+
+      ]
+    };
+
+    const days = document.querySelectorAll('.days-row .day-pill');
+    const seriesList = document.getElementById('series-list');
+    const panelTitle = document.querySelector('.panel .day-pill');
+    const toast = document.getElementById('toast');
+    let toastTimer = null;
+
+    // IntersectionObserver for lazy images (added)
+    const lazyObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const img = entry.target;
+        if (img.dataset.src) img.src = img.dataset.src;
+        if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+        if (img.dataset.sizes) img.sizes = img.dataset.sizes;
+
+        img.addEventListener('load', () => {
+          img.classList.add('loaded');
+          // cleanup dataset attributes
+          try { delete img.dataset.src; delete img.dataset.srcset; delete img.dataset.sizes; } catch (e) { }
+        }, { once: true });
+
+        obs.unobserve(img);
+      });
+    }, {
+      rootMargin: '200px 0px',
+      threshold: 0.01
+    });
+
+    function observeLazyImages(root = document) {
+      root.querySelectorAll('img.lazy-img').forEach(img => {
+        if (img.dataset.src) lazyObserver.observe(img);
+      });
+    }
+
+    function renderDay(day) {
+      days.forEach(d => d.classList.toggle('active', d.dataset.day === day));
+      panelTitle.textContent = day.toUpperCase();
+
+      seriesList.innerHTML = '';
+      const list = data[day] || [];
+      if (!list.length) {
+        const empty = document.createElement('div'); empty.style.color = 'rgba(255,255,255,0.6)'; empty.style.padding = '12px'; empty.textContent = 'No series set for ' + day + '.'; seriesList.appendChild(empty); return;
+      }
+
+      list.forEach((s, idx) => {
+        const item = document.createElement('div'); item.className = 'list-item';
+
+        const thumbWrap = document.createElement('div'); thumbWrap.className = 'thumb';
+
+        // ---------- REPLACED IMAGE CREATION: progressive lazy-load ----------
+        const img = document.createElement('img');
+        img.alt = s.title || '';
+        img.loading = 'lazy';
+        // set approximate intrinsic size to prevent layout shift
+        img.width = 72;
+        img.height = 100;
+        // tiny SVG placeholder so layout is preserved and paint is fast
+        const svgPlaceholder =
+          'data:image/svg+xml;utf8,' + encodeURIComponent(
+            `<svg xmlns="http://www.w3.org/2000/svg" width="72" height="100" viewBox="0 0 72 100" preserveAspectRatio="xMidYMid slice"><rect width="100%" height="100%" fill="#222" /></svg>`
+          );
+        img.src = svgPlaceholder;
+        // store real url in data-src (swapped in by observer)
+        img.dataset.src = s.thumb || '';
+        img.className = 'lazy-img';
+        thumbWrap.appendChild(img);
+        // ---------- end image replacement ----------
+
+        const seriesBox = document.createElement('div'); seriesBox.className = 'series-box';
+        const info = document.createElement('div'); info.className = 'series-info';
+        const title = document.createElement('div'); title.className = 'series-title'; title.textContent = s.title;
+        info.appendChild(title);
+
+        const copyWrap = document.createElement('div'); copyWrap.className = 'copy-wrap';
+        const btn = document.createElement('button'); btn.className = 'copy-btn'; btn.type = 'button'; btn.textContent = 'copy link';
+        copyWrap.appendChild(btn);
+
+        const dropdown = document.createElement('div'); dropdown.className = 'links-dropdown';
+        // build link buttons
+        (s.links || []).forEach((L, i) => {
+          const lbtn = document.createElement('button'); lbtn.type = 'button'; lbtn.textContent = L.label || ('link ' + (i + 1));
+          lbtn.dataset.url = L.url || '';
+
+          // *** Only change: hide this dropdown after clicking a link (so Link 1/Link 2 disappear after click) ***
+          lbtn.addEventListener('click', (ev) => { ev.stopPropagation(); copyToClipboard(L.url); dropdown.classList.remove('show'); });
+
+          dropdown.appendChild(lbtn);
+        });
+        copyWrap.appendChild(dropdown);
+
+        // button behaviour
+        btn.addEventListener('click', (ev) => {
+          ev.stopPropagation(); hideAllDropdowns();
+          // if only one link -> copy immediately
+          const links = s.links || [];
+          if (links.length <= 1) {
+            copyToClipboard(links[0] ? links[0].url : '');
+            return;
+          }
+          // otherwise toggle dropdown
+          dropdown.classList.toggle('show');
+        });
+
+        // click outside closes dropdowns
+        document.addEventListener('click', (e) => { if (!e.target.closest('.links-dropdown') && !e.target.closest('.copy-wrap')) hideAllDropdowns(); });
+
+        seriesBox.appendChild(info);
+        seriesBox.appendChild(copyWrap);
+
+        item.appendChild(thumbWrap);
+        item.appendChild(seriesBox);
+        seriesList.appendChild(item);
+      });
+
+      // observe lazy images added during this render
+      observeLazyImages(seriesList);
+    }
+
+    function hideAllDropdowns() { document.querySelectorAll('.links-dropdown').forEach(d => d.classList.remove('show')) }
+
+    function copyToClipboard(url) {
+      if (!url) { showToast('No URL'); return; }
+      navigator.clipboard.writeText(url).then(() => showToast('Copied!')).catch(() => {
+        const ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); showToast('Copied!'); } catch (e) { showToast('Copy failed'); } ta.remove();
+      });
+    }
+
+    function showToast(msg) { toast.textContent = msg; toast.classList.add('show'); if (toastTimer) clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('show'), 2000); }
+
+    days.forEach(d => d.addEventListener('click', () => renderDay(d.dataset.day)));
+    renderDay('monday');
+
+    // ensure images on first render are observed (redundant because renderDay calls observe, but harmless)
+    observeLazyImages();
+
+    // expose for debugging
+    window.DailyDonghua = { data, renderDay }
+  </script>
+</body>
+
+</html>
